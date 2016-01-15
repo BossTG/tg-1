@@ -1,19 +1,15 @@
 /*
     This file is part of telegram-cli.
-
     Telegram-cli is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 2 of the License, or
     (at your option) any later version.
-
     Telegram-cli is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-
     You should have received a copy of the GNU General Public License
     along with this telegram-cli.  If not, see <http://www.gnu.org/licenses/>.
-
     Copyright Vitaly Valtman 2013-2015
 */
 
@@ -263,6 +259,7 @@ void push_media (struct tgl_message_media *M) {
   case tgl_message_media_document_encr:
     lua_newtable (luaState);
     lua_add_string_field ("type", "document");
+     lua_add_string_field ("caption", M->document->caption);
     break;
   case tgl_message_media_unsupported:
     lua_newtable (luaState);
@@ -658,7 +655,6 @@ enum lua_query_type {
   lq_import_chat_link,
   lq_export_chat_link,
   lq_block_user,
-  lq_unblock_user,
   lq_get_message
 };
 
@@ -1303,10 +1299,6 @@ void lua_do_all (void) {
       tgl_do_block_user (TLS, ((tgl_peer_t *)lua_ptr[p + 1])->id, lua_empty_cb, lua_ptr[p]);
       p += 2;
       break;
-    case lq_unblock_user:
-      tgl_do_unblock_user (TLS, ((tgl_peer_t *)lua_ptr[p + 1])->id, lua_empty_cb, lua_ptr[p]);
-      p += 2;
-      break;
     case lq_get_message:
       tgl_do_get_message (TLS, (long)lua_ptr[p + 1], lua_msg_cb, lua_ptr[p]);
       p += 2;
@@ -1404,7 +1396,6 @@ struct lua_function functions[] = {
   {"res_user", lq_res_user, { lfp_string, lfp_none }},
   {"export_chat_link", lq_export_chat_link, { lfp_chat, lfp_none }},
   {"block_user", lq_block_user, { lfp_user, lfp_none }},
-  {"unblock_user", lq_unblock_user, { lfp_user, lfp_none }},
   {"get_message", lq_get_message, { lfp_positive_number, lfp_none }},
   { 0, 0, { lfp_none}}
 };
